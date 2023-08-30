@@ -1,0 +1,78 @@
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      arg_path:
+        description: '地址'
+        required: true
+        default: 'dl.k8s.io'
+      arg_version:
+        description: '版本'
+        required: true
+        default: 'v1.26.3'
+      arg_os:
+        description: '类型: linux/windows/darwin'
+        required: true
+        default: 'linux'
+      arg_arch:
+        description: '架构:amd64/arm64'
+        required: true
+        default: 'amd64'
+
+name: download
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: wget
+      if: github.event.inputs.arg_os != 'windows'
+      run: |
+        echo https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/apiextensions-apiserver \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-aggregator \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-apiserver \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-controller-manager \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-log-runner \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-proxy \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-scheduler \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubeadm \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubectl \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubectl-convert \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubelet \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/mounter|xargs -d " " -n1 wget
+
+    - name: wget
+      if: github.event.inputs.arg_os == 'windows'
+      run: |
+        echo https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/apiextensions-apiserver.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-aggregator.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-apiserver.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-controller-manager.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-log-runner.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-proxy.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-scheduler.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubeadm.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubectl.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubectl-convert.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kubelet.exe \
+          https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/mounter.exe|xargs -d " " -n1 wget
+
+
+    - name: pack the dir
+      run: |
+        tar -zcvf bin.tar.gz ./*
+
+    - name: Release set path
+      run: |
+        touch release.txt
+        echo "RELEASE_PATH=$PWD" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.FILE_DATE }}
+        body_path: release.txt
+        files: ${{ env.RELEASE_PATH }}/*
