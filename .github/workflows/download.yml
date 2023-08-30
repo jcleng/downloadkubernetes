@@ -75,4 +75,4 @@ jobs:
       with:
         tag_name: ${{ github.event.inputs.arg_os }}_${{ github.event.inputs.arg_arch }}_${{ env.FILE_DATE }}
         body_path: release.txt
-        files: ${{ env.RELEASE_PATH }}/*
+        files: ${{ env.RELEASE_PATH }}/bin.tar.gz
