@@ -73,6 +73,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.event.inputs.arg_os }}_${{ github.event.inputs.arg_arch }}${{ env.FILE_DATE }}
+        tag_name: ${{ github.event.inputs.arg_os }}_${{ github.event.inputs.arg_arch }}_${{ github.event.inputs.arg_version }}${{ env.FILE_DATE }}
         body_path: release.txt
         files: ${{ env.RELEASE_PATH }}/bin.tar.gz
