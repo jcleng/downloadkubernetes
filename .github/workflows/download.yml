@@ -28,7 +28,7 @@ jobs:
     - name: wget
       if: github.event.inputs.arg_os != 'windows'
       run: |
-        echo https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/apiextensions-apiserver \
+        echo -n https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/apiextensions-apiserver \
           https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-aggregator \
           https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-apiserver \
           https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-controller-manager \
@@ -44,7 +44,7 @@ jobs:
     - name: wget
       if: github.event.inputs.arg_os == 'windows'
       run: |
-        echo https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/apiextensions-apiserver.exe \
+        echo -n https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/apiextensions-apiserver.exe \
           https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-aggregator.exe \
           https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-apiserver.exe \
           https://${{ github.event.inputs.arg_path }}/${{ github.event.inputs.arg_version }}/bin/${{ github.event.inputs.arg_os }}/${{ github.event.inputs.arg_arch }}/kube-controller-manager.exe \
