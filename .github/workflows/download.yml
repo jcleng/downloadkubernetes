@@ -60,7 +60,7 @@ jobs:
 
     - name: pack the dir
       run: |
-        tar -zcvf bin.tar.gz ./*
+        tar -zcvf ${{ github.event.inputs.arg_os }}_${{ github.event.inputs.arg_arch }}_${{ github.event.inputs.arg_version }}${{ env.FILE_DATE }}.tar.gz ./*
 
     - name: Release set path
       run: |
